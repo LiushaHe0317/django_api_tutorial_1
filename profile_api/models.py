@@ -1,5 +1,46 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.contrib.auth.models import AbstractUser, PermissionsMixin, BaseUserManager
+
+
+class UserProfileManager(BaseUserManager):
+    """Manager for user profiles"""
+    def create_user(self, email, name, password=None):
+        """
+        Create a new user profile.
+
+        :param email: A string of email address.
+        :param name: A string of user's name.
+        :param password: A string of password. Can be None by default.
+        :return: A user model.
+        """
+        if not email:
+            raise ValueError('Users much have an email address.')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name)
+
+        user.set_password(password)
+        user.save(using=self._db)
+
+        return user
+
+    def create_superuser(self, email, name, password=None):
+        """
+        Create a superuser profile.
+
+        :param email: A string of email address.
+        :param name: A string of user's name.
+        :param password: A string of password.
+        :return: A user model.
+        """
+        user = self.create_user(email, name, password)
+
+        user.is_superuser = True
+        user.is_staff = True
+
+        user.save(using=self._db)
+
+        return user
 
 
 class UserProfile(AbstractUser, PermissionsMixin):
@@ -25,5 +66,3 @@ class UserProfile(AbstractUser, PermissionsMixin):
     def __str__(self):
         """Return string representation of user."""
         return self.email
-
-
