@@ -7,7 +7,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserProfile
-        fields = ['id', 'email', 'name', 'password']
+        fields = '__all__'
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -26,3 +26,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return user
 
 
+class ProfileFeedItemSerializer(serializers.ModelSerializer):
+    """Serializes profile feed items."""
+
+    class Meta:
+        model = models.ProfileFeedItem
+        fields = ['id', 'user_profile', 'ststus_text', 'created_on']
+        extra_kwargs = {'user_profile': {'read_only': True}}
